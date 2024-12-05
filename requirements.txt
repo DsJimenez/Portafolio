@@ -1,7 +1,4 @@
 pandas
 streamlit
 plotly
-sqlite3
-os
-sys
 numpy

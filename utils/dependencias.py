@@ -32,6 +32,8 @@ ruta=  mapear_datos("sakila_master",".db")
 # Se utiliza la ruta para traer la BBDD.
 data = cargar_datos(ruta)
 
+data
+
 
 # Tablas de la BBDD.
 categorias = data["category"]
@@ -46,9 +48,39 @@ equipo_trabajo = data["staff"]
 
 
 # Datos gráfico
+
+# Gráfico 1
 union1 = rentas.merge(inventario, on="inventory_id")
 dt_barras = union1.merge(peliculas_categorizadas, on= "film_id")
 
 dt_barras2 = dt_barras[["inventory_id","category_id"]]
 
 dt_graf = pd.merge(dt_barras2,categorias,left_on="category_id",right_on="category_id")
+
+# Gráfico 2
+inventario2= inventario[['film_id','inventory_id']]
+
+rentas['rental_date'] = pd.to_datetime(rentas['rental_date'])
+
+rentas['month'] = rentas['rental_date'].dt.month_name()
+rentas['year'] = rentas['rental_date'].dt.year
+rentas['day'] = rentas['rental_date'].dt.day_name()
+
+date = rentas[['inventory_id','rental_date','year','month','day']]
+
+rentas_en_tiempo = date.groupby(date['rental_date'].dt.to_period('D')).agg({
+    'inventory_id': 'count'
+}).reset_index()
+
+rentas_en_tiempo['rental_date'] = rentas_en_tiempo['rental_date'].dt.to_timestamp()
+
+
+# Gráfico 3
+veces_remplazada = np.random.randint(0, 6, size=len(peliculas))
+peliculas['veces_remplazada'] = veces_remplazada
+
+film_data = peliculas[['film_id','veces_remplazada','replacement_cost']]
+
+table1= pd.merge(film_data, peliculas_categorizadas, left_on= 'film_id', right_on= 'film_id')
+
+table2 = pd.merge(table1,categorias, left_on= 'category_id', right_on= 'category_id')
