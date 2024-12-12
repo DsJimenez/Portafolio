@@ -36,51 +36,45 @@ data
 
 
 # Tablas de la BBDD.
-categorias = data["category"]
-peliculas = data["film"]
-tienda = data["store"]
-pagos = data["payment"]
-clientes = data["customer"]
-rentas = data["rental"]
-inventario = data["inventory"]
-peliculas_categorizadas = data["film_category"]
-equipo_trabajo = data["staff"]
+rental = data['rental']
+inventory = data['inventory']
+film = data['film']
+staff = data['staff']
+film_category = data['film_category']
+category = data['category']
+payment = data['payment']
+
+# Filtrado de columnas.
+rentas = rental[['rental_id','rental_date','inventory_id','customer_id','staff_id']]
+inventario = inventory[['inventory_id', 'film_id' , 'store_id']]
+peliculas = film[['film_id', 'title', 'release_year', 'length', 'rating']]
+equipo = staff[['staff_id', 'first_name']]
+peliculas_categorizadas = film_category[['film_id', 'category_id']]
+categorias = category[['category_id', 'name']]
+pagos = payment[['payment_id', 'rental_id', 'amount']]
+
+# Unión de tablas para la craeación de un dataframe.
+mg1 = rentas.merge(pagos,on='rental_id')
+mg2 = mg1.merge(inventario,on='inventory_id')
+mg3 = mg2.merge(film,on='film_id')
+mg4 = mg3.merge(peliculas_categorizadas,on='film_id')
+mg5 = mg4.merge(categorias,on='category_id')
+mg6 = mg5.merge(equipo,on='staff_id')
+
+# Borrado de colunmas poco utiles.
+df = mg6.drop(columns=['language_id','original_language_id','description','special_features','last_update'])
+
+df['month'] = pd.to_datetime(df['rental_date']).dt.month_name()
+df['year'] = pd.to_datetime(df['rental_date']).dt.year
+df['day'] = pd.to_datetime(df['rental_date']).dt.day
+
+# Data frame final
+dataframe = df
+
+# Gráfico barras.
+total = dataframe.groupby('name')['amount'].sum().reset_index(name='total_amount').sort_values(by='total_amount',ascending=False).round(2)
 
 
-# Datos gráfico
+# Gráfico de disperción
 
-# Gráfico 1
-union1 = rentas.merge(inventario, on="inventory_id")
-dt_barras = union1.merge(peliculas_categorizadas, on= "film_id")
-
-dt_barras2 = dt_barras[["inventory_id","category_id"]]
-
-dt_graf = pd.merge(dt_barras2,categorias,left_on="category_id",right_on="category_id")
-
-# Gráfico 2
-inventario2= inventario[['film_id','inventory_id']]
-
-rentas['rental_date'] = pd.to_datetime(rentas['rental_date'])
-
-rentas['month'] = rentas['rental_date'].dt.month_name()
-rentas['year'] = rentas['rental_date'].dt.year
-rentas['day'] = rentas['rental_date'].dt.day_name()
-
-date = rentas[['inventory_id','rental_date','year','month','day']]
-
-rentas_en_tiempo = date.groupby(date['rental_date'].dt.to_period('D')).agg({
-    'inventory_id': 'count'
-}).reset_index()
-
-rentas_en_tiempo['rental_date'] = rentas_en_tiempo['rental_date'].dt.to_timestamp()
-
-
-# Gráfico 3
-veces_remplazada = np.random.randint(0, 6, size=len(peliculas))
-peliculas['veces_remplazada'] = veces_remplazada
-
-film_data = peliculas[['film_id','veces_remplazada','replacement_cost']]
-
-table1= pd.merge(film_data, peliculas_categorizadas, left_on= 'film_id', right_on= 'film_id')
-
-table2 = pd.merge(table1,categorias, left_on= 'category_id', right_on= 'category_id')
+displot = dataframe.groupby('name').agg({'amount':'sum','replacement_cost':'mean','length':'mean','film_id':'count'}).reset_index().sort_values(by='amount',ascending=False).round(2)
