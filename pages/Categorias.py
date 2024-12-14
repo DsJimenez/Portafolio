@@ -27,9 +27,9 @@ if cat_seleccionada:
     total_fil = displot[mascara]
 else:
     total_fil = displot
-
+# Columnas metricas.
 col1, col2, col3, col4 = st.columns(4)
-
+# Columnas gráficos.
 colum1, colum2 = st.columns(2)
 
 with col1:
@@ -81,7 +81,7 @@ fig = px.bar(
     labels={'film_id':'Conteo de Películas',
             'name':'Categorías'},
             text_auto=True,
-            title='Comportamiento de las categorías según duración, costo de remplazo e ingresos percibidos')
+            title='Conteo de películas por categoría ')
 fig.update_traces(textfont=dict(size=22))
 fig.update_layout(showlegend=False)
 st.plotly_chart(fig)
