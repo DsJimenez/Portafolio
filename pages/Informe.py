@@ -6,7 +6,7 @@ st.set_page_config(layout="wide") # Recomendado para informes grandes
 st.title("Mi Dashboard de Datos No Estructurados")
 
 # URL que copiaste de Looker Studio
-url_looker = "https://lookerstudio.google.com/reporting/13563ba4-4408-449d-9612-f7add8ed1840"
+url_looker = "https://lookerstudio.google.com/reporting/13563ba4-4408-449d-9612-f7add8ed1840/embed"
 
 # Incrustar el informe
 components.iframe(url_looker, height=800, scrolling=True)
