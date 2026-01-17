@@ -9,4 +9,4 @@ st.title("Mi Dashboard de Datos No Estructurados")
 url_looker = "https://lookerstudio.google.com/embed/reporting/13563ba4-4408-449d-9612-f7add8ed1840/page/sgckF"
 
 # Incrustar el informe
-components.iframe(url_looker, height=1200, scrolling=True)
+components.iframe(url_looker, height=1250, scrolling=True)
